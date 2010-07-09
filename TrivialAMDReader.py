@@ -11,7 +11,6 @@ Workflow comments  are written as # --
 
 """
 
-
 #> This is our base URI for The Next HOPE instance of an OpenAMD server
 g_openAMD_URI = "http://api.hope.net/"
 
@@ -27,19 +26,6 @@ g_slices = {
 			 'stats': '/api/stats',
 			 }
 
-#> These are lists of fields in each slice.
-g_slice_fields = {
-			'locations' : ('area','time','x','y','user','button'), 
-			 'speakers' : ('name','bio'), 
-			 'talks' :  ('speakers','title','abstract','time','track','interests'), 
-			 'interests' : (), #this is a free-from set of tags
-			 'users': ('name','x','y','interests'),
-			 'stats': ('poptalks','age'), #TRICKY:TODO: examples, there are not set yet
-}
-
-
-#new tech, activism, radio, lockpicking, crypto, privacy, ethics, telephones, social engineering, hacker spaces, hardware hacking, nostalgia, communities, science, government, network security, malicious software, pen testing, web, niche hacks, media
-
 def slices():
 	""" Returns the list of valid slices for this install of OpenAMD."""
 	return g_slices.keys()
@@ -52,22 +38,11 @@ def JSON_string_at_uri(uri):
 	""" simple function to return the JSON string at a requested URI. """
 	data = urllib2.urlopen(uri).read()
 	return data	
-
-def JSON_for_entire_slice(sliceName):
-	""" simple function to return the JSON string for an entire JSON slice.
-	Don't be a jerk and use this often, it eats bandwith. use more specific 
-	fetch tools that are below."""
-	sliceUri = uri_for_slice(sliceName)
-	return JSON_string_at_uri(sliceUri)
 	
 def dictFromJSON(stringOfJSON):
 	""" Returns a python dict created from the passed JSON string. """
 	return json.loads(stringOfJSON, parse_float=True, parse_int=True, encoding='UTF-8')
 
-def JSONFromDict(dict):
-	""" returns a pretty printed JSON string from a python object. """
-	return json.dumps(dict, sort_keys=True, indent=4)
-	
 def lazyAndBayWayToGetData():
 	""" This is a lazy and bad way to get data in whole-slice increments. This
 	is an example of something that works, but is a slow and poor way to run."""
@@ -88,7 +63,5 @@ def lazyAndBayWayToGetData():
 
 #> This is a pretty standard main statement for Python, and if you run 
 #> "python $THIS_FILE_NAME this will run. This just grabs/shows the locations data
-
-
 if __name__ == '__main__':
 	lazyAndBadWayToGetData()
