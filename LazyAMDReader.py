@@ -1,37 +1,88 @@
 import json
 import re
 import urllib2
+""" This file is a quick example of how to use the OpenAMD API, and what you can do with it.
+This is by no means a complete implementation, but it is a good place to start, test
+and tinker as you get ready to build your awesomely awesome app or project of your own. 
+
+Educational comments are started as "#> 
+Workflow comments  are written as # --
+#TOOD: #TRICKY:  #BUG: and other such comments are self-explanitory
+
+"""
 
 
+#> This is our base URI for The Next HOPE instance of an OpenAMD server
 g_openAMD_URI = "http://api.hope.net/"
-g_slices = {'locations' : 'api/locations',
+
+#> This is a dictionary of 'data slices' as well as the section of the 
+#> location on the data server where the data resides. Z.b. info on 'talks'
+#> data is at "http://api.hope.net/api/talks"
+g_slices = { 
+			'locations' : 'api/locations',
 			 'speakers' : 'api/speakers',
 			 'talks' : 'api/talks',
 			 'interests' : 'api/interests',
 			 }
 
+g_slice_aspects = {
+			'locations' : (), 
+			 'speakers' : (), 
+			 'talks' :  (), 
+			 'interests' : (), 
+}
+
+def slices():
+	""" Returns the list of valid slices for this install of OpenAMD."""
+	return g_slices.keys()
+
+def uri_for_slice(sliceName):
+	""" simple funciton to return a complete URI for a data slice. """
+	return g_openAMD_URI + g_slices[sliceName]
+
+def JSON_string_at_uri(uri):
+	""" simple function to return the JSON string at a requested URI. """
+	data = urllib2.urlopen(uri).read()
+	return data	
+
+def JSON_for_entire_slice(sliceName):
+	""" simple function to return the JSON string for an entire JSON slice.
+	Don't be a jerk and use this often, it eats bandwith. use more specific 
+	fetch tools that are below."""
+	sliceUri = uri_for_slice(sliceName)
+	return JSON_string_at_uri(sliceUri)
+	
 def dictFromJSON(stringOfJSON):
-	""" Returns a python dict created from the passed JSON string"""
+	""" Returns a python dict created from the passed JSON string. """
 	return json.loads(stringOfJSON, parse_float=True, parse_int=True, encoding='UTF-8')
 
 def JSONFromDict(dict):
 	""" returns a pretty printed JSON string from a python object. """
 	return json.dumps(dict, sort_keys=True, indent=4)
+	
 
-def uri_for_slice(sliceName):
-	return g_openAMD_URI + g_slices[sliceName]
 
-def slices():
-	return g_slices.keys()
-
-def JSON_string_at_uri(uri):
-	data = urllib2.urlopen(uri).read()
-	return data	
-
-if __name__ == '__main__':
-	uri = uri_for_slice('locations')
-	data = JSON_string_at_uri(uri)	
+def lazyAndBayWayToGetData():
+	""" This is a lazy and bad way to get data in whole-slice increments. This
+	is an example of something that works, but is a slow and poor way to run."""
+	# -- fetch the uri for the whole talks slice
+	uri = uri_for_slice('talks')
+	# -- fetch the JSON string for the whole slice
+	data = JSON_string_at_uri(uri)		
+	# -- turn that JSON string into a python list
 	obj = dictFromJSON(data)
 
-	d2 = JSONFromDict(obj)
-	print d2
+	# -- for each object in the list, grab it as  a dict, and look for 
+	# -- having a track name, and that name being 'tesla'
+	for talk in obj:
+		if u'track' in talk.keys() and talk[u'track'] == u"Tesla":
+			print 'match'
+		else: print 'nomatch'
+
+
+#> This is a pretty standard main statement for Python, and if you run 
+#> "python $THIS_FILE_NAME this will run. This just grabs/shows the locations data
+
+
+if __name__ == '__main__':
+	lazyAndBadWayToGetData()
