@@ -75,3 +75,10 @@ class HopeAPI:
 		data = JSON_string_at_uri(uri)		
 		# -- turn that JSON string into a python list
 		return dictFromJSON(data)
+
+if __name__ == '__main__':
+	api = HopeAPI()
+	print api.locations
+	
+	api.filterDict = {'track': 'Tesla'}
+	print api.talks
