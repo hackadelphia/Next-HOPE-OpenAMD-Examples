@@ -93,30 +93,29 @@ def filter_for_slice_uri(slice, filterDict):
 	and a list of query and value pairs. """
 	uri = uri_for_slice('talks')
 	#> This magic takes a dict, and turns it into a query string
-	query_string = '&'.join(
+	query_string =  '&'.join(
 		[k+'='+urllib2.quote(str(v)) for (k,v) in filterDict.items()])
-	print query_string
+
+	#TODO: test other filters, esp. list's passed in the filter dict
+
+	#> using 'x'.join is a faster and sleeker string builder than the + operator in python
+	return '?'.join( (uri,query_string) )
 	
 def sleekAndSmartWayToGetData():
 	"""This is an example of a fast and smart way to grab data from the API."""
-	# -- fetch the uri for the whole talks slice
-	filterDict = {'track':'Tesla'}
+	# -- fetch the uri for the data in a slice that matches filters.
 	slice = 'talks'
-	filter =  filter_for_slice_uri(slice, filterDict)
-
-	print filter
+	filterDict = {'track':'Tesla'}
+	uri =  filter_for_slice_uri(slice, filterDict)
+	print uri
 	# -- fetch the JSON string for the whole slice
-#	data = JSON_string_at_uri(uri)		
-# -- turn that JSON string into a python list
-#	obj = dictFromJSON(data)
-
-#	# -- for each object in the list, grab it as  a dict, and look for 
-#	# -- having a track name, and that name being 'tesla'
-#	for talk in obj:
-#		if u'track' in talk.keys() and talk[u'track'] == u"Tesla":
-#			print 'match'
-#		else: print 'nomatch'
-
+	data = JSON_string_at_uri(uri)		
+	# -- turn that JSON string into a python list
+	obj = dictFromJSON(data)
+	# -- for each object in the list, grab it as  a dict, and look for 
+	# -- having a track name, and that name being 'tesla'
+	for talk in obj:
+		print talk 
 
 def lazyAndBayWayToGetData():
 	""" This is a lazy and bad way to get data in whole-slice increments. This
@@ -132,7 +131,7 @@ def lazyAndBayWayToGetData():
 	# -- having a track name, and that name being 'tesla'
 	for talk in obj:
 		if u'track' in talk.keys() and talk[u'track'] == u"Tesla":
-			print 'match'
+			print talk
 		else: print 'nomatch'
 
 
