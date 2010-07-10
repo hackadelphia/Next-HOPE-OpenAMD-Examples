@@ -5,3 +5,10 @@ layout:
 README - this file
 ./$LANGUAGE - Contains $LANGUAGE examples for using Last HOPE data
 
+example:
+
+from HopeAPI import HopeAPI
+
+api = HopeAPI()
+api.locations
+api.users #etc
