@@ -1,0 +1,7 @@
+
+This contains examples of using the OpenAMD data from The Next HOPE (2010) conference.  This includes fetching data, and some visualizations of data from  the database.
+
+layout:
+README - this file
+./$LANGUAGE - Contains $LANGUAGE examples for using Last HOPE data
+
