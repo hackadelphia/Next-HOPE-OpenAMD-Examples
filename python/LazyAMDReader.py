@@ -95,6 +95,7 @@ def filter_for_slice_uri(slice, filterDict):
 	#> This magic takes a dict, and turns it into a query string
 	query_string =  '&'.join(
 		[k+'='+urllib2.quote(str(v)) for (k,v) in filterDict.items()])
+	#TRICKY:HACK: The server side limits are not currently working. 
 
 	#TODO: test other filters, esp. list's passed in the filter dict
 
@@ -117,29 +118,7 @@ def sleekAndSmartWayToGetData():
 	for talk in obj:
 		print talk 
 
-def lazyAndBayWayToGetData():
-	""" This is a lazy and bad way to get data in whole-slice increments. This
-	is an example of something that works, but is a slow and poor way to run."""
-	# -- fetch the uri for the whole talks slice
-	uri = uri_for_slice('talks')
-	# -- fetch the JSON string for the whole slice
-	data = JSON_string_at_uri(uri)		
-	# -- turn that JSON string into a python list
-	obj = dictFromJSON(data)
-
-	# -- for each object in the list, grab it as  a dict, and look for 
-	# -- having a track name, and that name being 'tesla'
-	for talk in obj:
-		if u'track' in talk.keys() and talk[u'track'] == u"Tesla":
-			print talk
-		else: print 'nomatch'
-
-
-
 #> This is a pretty standard main statement for Python, and if you run 
 #> "python $THIS_FILE_NAME this will run. This just grabs/shows the locations data
-
-
 if __name__ == '__main__':
-#	lazyAndBadWayToGetData()
 	sleekAndSmartWayToGetData()	
