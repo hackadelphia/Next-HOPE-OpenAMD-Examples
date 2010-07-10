@@ -2,7 +2,6 @@ import json
 import re
 import urllib2
 
-
 #> This is our base URI for The Next HOPE instance of an OpenAMD server
 g_openAMD_URI = "http://api.hope.net/"
 
@@ -63,6 +62,9 @@ class HopeAPI:
 		
 	def __getattr__(self, slice):
 		"""This is an example of a fast and smart way to grab data from the API."""
+		if not g_slices.has_key(slice):
+			raise Exception('Unsupported slice name: ' + slice)
+			
 		if self.filterDict == None:
 			# -- fetch the uri for the whole talks slice
 			uri = self.uri_for_slice(slice)
