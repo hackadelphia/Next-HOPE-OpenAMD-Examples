@@ -43,7 +43,7 @@ def dictFromJSON(stringOfJSON):
 	""" Returns a python dict created from the passed JSON string. """
 	return json.loads(stringOfJSON, parse_float=True, parse_int=True, encoding='UTF-8')
 
-def lazyAndBayWayToGetData():
+def lazyAndBadWayToGetData():
 	""" This is a lazy and bad way to get data in whole-slice increments. This
 	is an example of something that works, but is a slow and poor way to run."""
 	# -- fetch the uri for the whole talks slice

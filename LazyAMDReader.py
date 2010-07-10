@@ -5,8 +5,8 @@ import urllib2
 This is by no means a complete implementation, but it is a good place to start, test
 and tinker as you get ready to build your awesomely awesome app or project of your own. 
 
-Educational comments are started as "#> 
-Workflow comments  are written as # --
+#> Are Educational comments
+# -- Are workflow comments 
 #TOOD: #TRICKY:  #BUG: and other such comments are self-explanitory
 
 """
@@ -40,18 +40,22 @@ g_slice_fields = {
 
 #new tech, activism, radio, lockpicking, crypto, privacy, ethics, telephones, social engineering, hacker spaces, hardware hacking, nostalgia, communities, science, government, network security, malicious software, pen testing, web, niche hacks, media
 
+
 def slices():
 	""" Returns the list of valid slices for this install of OpenAMD."""
 	return g_slices.keys()
+
 
 def uri_for_slice(sliceName):
 	""" simple funciton to return a complete URI for a data slice. """
 	return g_openAMD_URI + g_slices[sliceName]
 
+
 def JSON_string_at_uri(uri):
 	""" simple function to return the JSON string at a requested URI. """
 	data = urllib2.urlopen(uri).read()
 	return data	
+
 
 def JSON_for_entire_slice(sliceName):
 	""" simple function to return the JSON string for an entire JSON slice.
@@ -59,15 +63,61 @@ def JSON_for_entire_slice(sliceName):
 	fetch tools that are below."""
 	sliceUri = uri_for_slice(sliceName)
 	return JSON_string_at_uri(sliceUri)
+
 	
 def dictFromJSON(stringOfJSON):
 	""" Returns a python dict created from the passed JSON string. """
 	return json.loads(stringOfJSON, parse_float=True, parse_int=True, encoding='UTF-8')
 
+
 def JSONFromDict(dict):
 	""" returns a pretty printed JSON string from a python object. """
 	return json.dumps(dict, sort_keys=True, indent=4)
 	
+def JSONFromDict(slice, limitDict):
+	"""function tries to fetch data from slice, iff the key pairs in 'limitDict' 
+	are matched. If there is no limitDict, or it is empty, the whole slice is."""
+	if(limitDict == None or len(limitDict.keys()) == 0):
+		return JSON_for_entire_slice(slice)
+	else:
+		base = JSON_for_entire_slice(slice)
+		# -- limits are the form of '?x=y&z=k' 
+		limits = '?'
+		for x in d.keys():
+			limits += str(x)+'='+str(d[x])+'&'
+		limits.rstrip('&')
+		
+
+def filter_for_slice_uri(slice, filterDict):
+	"""Returns a valid query string paramaeters list from a slice,
+	and a list of query and value pairs. """
+	uri = uri_for_slice('talks')
+	#> This magic takes a dict, and turns it into a query string
+	query_string = '&'.join(
+		[k+'='+urllib2.quote(str(v)) for (k,v) in filterDict.items()])
+	print query_string
+	
+def sleekAndSmartWayToGetData():
+	"""This is an example of a fast and smart way to grab data from the API."""
+	# -- fetch the uri for the whole talks slice
+	filterDict = {'track':'Tesla'}
+	slice = 'talks'
+	filter =  filter_for_slice_uri(slice, filterDict)
+
+	print filter
+	# -- fetch the JSON string for the whole slice
+#	data = JSON_string_at_uri(uri)		
+# -- turn that JSON string into a python list
+#	obj = dictFromJSON(data)
+
+#	# -- for each object in the list, grab it as  a dict, and look for 
+#	# -- having a track name, and that name being 'tesla'
+#	for talk in obj:
+#		if u'track' in talk.keys() and talk[u'track'] == u"Tesla":
+#			print 'match'
+#		else: print 'nomatch'
+
+
 def lazyAndBayWayToGetData():
 	""" This is a lazy and bad way to get data in whole-slice increments. This
 	is an example of something that works, but is a slow and poor way to run."""
@@ -86,9 +136,11 @@ def lazyAndBayWayToGetData():
 		else: print 'nomatch'
 
 
+
 #> This is a pretty standard main statement for Python, and if you run 
 #> "python $THIS_FILE_NAME this will run. This just grabs/shows the locations data
 
 
 if __name__ == '__main__':
-	lazyAndBadWayToGetData()
+#	lazyAndBadWayToGetData()
+	sleekAndSmartWayToGetData()	
