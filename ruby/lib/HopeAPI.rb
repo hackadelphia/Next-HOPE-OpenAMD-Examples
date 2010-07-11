@@ -31,4 +31,20 @@ class HopeAPI
     "niche hacks", 
     "media" 
   ]
+
+  def get_full_uri(type)
+    URI.join(FEED_URI, 'api', type)
+  end
+
+  def make_request(type, *args)
+    req = Net::HTTP::Get.new(get_full_uri(type))
+    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+
+    case res
+    when Net::HTTPSuccess, Net::HTTPRedirection
+      return res
+    else
+      raise res.error!
+    end
+  end
 end
