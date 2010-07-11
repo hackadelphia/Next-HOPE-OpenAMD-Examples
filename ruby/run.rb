@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
+require 'haml'
 
-get '/hi' do
-  "Hello World!"
+get '/' do
+  haml :index
 end
