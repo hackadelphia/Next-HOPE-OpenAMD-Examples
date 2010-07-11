@@ -43,10 +43,12 @@ module HopeAPI
     URI.parse([FEED_URI, 'api', type].join('/') + '/')
   end
 
-  def self.make_request(type, *args)
+  #
+  # args are the GET parameters. use the force.
+  #
+  def self.make_request(type, args={})
     uri  = get_full_uri(type)
     # XXX totally broken for dupe keys, but meh. Ruby's HTTP clients blow.
-    args = (args[0] || { }) rescue { } 
     uri.query = args.keys.map { |key| CGI.escape("#{key}=#{argv[0][key]}") }.join(';')
 
     resp = Curl::Easy.http_get(uri.to_s)
@@ -62,8 +64,32 @@ module HopeAPI
 
     return JSON.load(resp.body_str)
   end
+
+  # see above
+  def self.to_ruby(type, args={ })
+    # XXX moar cheating
+  
+    struct_klass = const_get(type.capitalize)
+
+    raise "not a valid type" unless struct_klass
+
+    data = make_request(type, args)
+
+    results = []
+
+    data.each do |item|
+      s = struct_klass.new
+      item.keys.each do |key|
+        s[key] = item[key]
+      end
+
+      results.push(s)
+    end
+
+    return results
+  end
 end
 
 if __FILE__ == $0
-  p HopeAPI.make_request('location')
+  p HopeAPI.to_ruby('location')
 end
