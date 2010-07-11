@@ -3,9 +3,8 @@
 %html
   %head
     %title Hello World.
-    %script(src='public/jquery.js' type='text/javascript')
-    %script(src='public/application.js' type='text/javascript')
-    :css
-      canvas { border: 1px solid black; }  
-  %body{:onload => "draw();"}
-    %canvas#tutorial{:height => "600", :width => "600"}
+    %script(src='javascripts/jquery.js' type='text/javascript')
+    %script(src='javascripts/application.js' type='text/javascript')
+    %link(rel='stylesheet' href='stylesheets/screen.css' type='text/css')
+  %body
+    %canvas#map{:height => "600", :width => "600"}
