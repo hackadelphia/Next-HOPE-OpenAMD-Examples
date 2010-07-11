@@ -1,7 +1,8 @@
+require 'rubygems'
 require 'uri'
 require 'cgi'
-require 'rubygems'
 require 'curb'
+require 'json'
 
 module HopeAPI
   FEED_URI = "http://api.hope.net"
@@ -48,11 +49,21 @@ module HopeAPI
     args = (args[0] || { }) rescue { } 
     uri.query = args.keys.map { |key| CGI.escape("#{key}=#{argv[0][key]}") }.join(';')
 
-    body = Curl::Easy.http_get(uri.to_s)
-    return body.body_str
+    resp = Curl::Easy.http_get(uri.to_s)
+
+    unless resp.response_code == 200
+      raise "Response #{resp.response_code} received"
+    end
+
+    # API improperly yields text/plain, so we run with that case.
+    unless resp.content_type == "text/plain" or resp.content_type == "application/json"
+      raise "Invalid content type: #{resp.content_type}"
+    end
+
+    return JSON.load(resp.body_str)
   end
 end
 
 if __FILE__ == $0
-  puts HopeAPI.make_request('location')
+  p HopeAPI.make_request('location')
 end
