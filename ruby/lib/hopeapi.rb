@@ -11,7 +11,7 @@ module HopeAPI
   Speaker  = Struct.new(:name, :bio)
   Location = Struct.new(:area, :time, :x, :y, :user, :button)
   Talk     = Struct.new(:speakers, :title, :abstract, :time, :track, :interests)
-  Profile  = Struct.new(:name, :x, :y, :interests)
+  User     = Struct.new(:name, :x, :y, :interests)
 
   # TODO worth it to enumerate?
   INTERESTS = [ 
@@ -67,15 +67,24 @@ module HopeAPI
 
   # see above
   def self.to_ruby(type, args={ })
-    # XXX moar cheating
-  
-    struct_klass = const_get(type.capitalize)
-
-    raise "not a valid type" unless struct_klass
+    type = type.to_s
 
     data = make_request(type, args)
 
+    # special case for interests
+    return data if type == 'interests' 
+
+    # XXX moar cheating
+    const_type = type.gsub(/s$/, '')
+    struct_klass = const_get(const_type.capitalize)
+
+    raise "not a valid type" unless struct_klass
+
     results = []
+   
+    if type == "users" or type == "speakers" 
+      data = data.map { |x| x[1] }
+    end
 
     data.each do |item|
       s = struct_klass.new
@@ -91,5 +100,13 @@ module HopeAPI
 end
 
 if __FILE__ == $0
-  p HopeAPI.to_ruby('location')
+  %w[
+    locations
+    interests
+    users
+    speakers
+    talks
+  ].each do |type|
+    p HopeAPI.to_ruby(type)
+  end
 end
