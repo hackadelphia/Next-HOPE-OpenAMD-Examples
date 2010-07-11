@@ -49,7 +49,7 @@ module HopeAPI
   def self.make_request(type, args={})
     uri  = get_full_uri(type)
     # XXX totally broken for dupe keys, but meh. Ruby's HTTP clients blow.
-    uri.query = args.keys.map { |key| CGI.escape("#{key}=#{argv[0][key]}") }.join(';')
+    uri.query = args.keys.map { |key| CGI.escape("#{key}=#{args[key]}") }.join(';')
 
     resp = Curl::Easy.http_get(uri.to_s)
 
