@@ -1,4 +1,9 @@
-class HopeAPI
+require 'uri'
+require 'cgi'
+require 'rubygems'
+require 'curb'
+
+module HopeAPI
   FEED_URI = "http://api.hope.net"
   
   # various feed structs
@@ -32,19 +37,22 @@ class HopeAPI
     "media" 
   ]
 
-  def get_full_uri(type)
-    URI.join(FEED_URI, 'api', type)
+  def self.get_full_uri(type)
+    # XXX cheating!
+    URI.parse([FEED_URI, 'api', type].join('/') + '/')
   end
 
-  def make_request(type, *args)
-    req = Net::HTTP::Get.new(get_full_uri(type))
-    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+  def self.make_request(type, *args)
+    uri  = get_full_uri(type)
+    # XXX totally broken for dupe keys, but meh. Ruby's HTTP clients blow.
+    args = (args[0] || { }) rescue { } 
+    uri.query = args.keys.map { |key| CGI.escape("#{key}=#{argv[0][key]}") }.join(';')
 
-    case res
-    when Net::HTTPSuccess, Net::HTTPRedirection
-      return res
-    else
-      raise res.error!
-    end
+    body = Curl::Easy.http_get(uri.to_s)
+    return body.body_str
   end
+end
+
+if __FILE__ == $0
+  puts HopeAPI.make_request('location')
 end
