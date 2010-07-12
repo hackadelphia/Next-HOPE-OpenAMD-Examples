@@ -8,37 +8,10 @@ import matplotlib.text as mtext
 
 #HACK: since floor data is NOT AVAILABLE, I'm creating floor data 
 #here as a static string.
-from  FakeFloorData import floor_data
+from  FakeFloorData import floor_data, FloorTest
 
 hacky_scale_factor = 20.0
 
-
-class TestFloor():
-	
-	floorDict = {}
-	
-	def __init__(self, floorDict):
-		self.floorDict = floorDict
-
-	def allVertices(self):
-		x = [] 
-		for area in self.floorDict:
-			if 'vertices' in area:
-				x.extend(area['vertices'])
-		return x
-		
-	def allVerticesX(self):
-		self.allVertices()
-		return [ x for x,y in self.allVertices()]
-	def allVerticesY(self):
-		return [ y for x,y in self.allVertices()]
-	
-	def verticies(self):
-		minX = min(self.allVerticesX())
-		minY = min(self.allVerticesY())
-		maxX = max(self.allVerticesX())
-		maxY = max(self.allVerticesY())
-		return ((minX,minY),(maxX,minY),(maxX,maxY),(minX,maxY))
 
 class TestRoom(lines.Line2D):
 
@@ -89,22 +62,14 @@ class TestRoom(lines.Line2D):
       lines.Line2D.draw(self, renderer)
       self.text.draw(renderer)
 
-
-
-
-"""
 fig = plt.figure()
 ax = fig.add_subplot(111)
+floor = FloorTest(floor_data)
+floorBoundaries = floor.bounds()
 line = TestRoom(floor_data, mfc='red', ms=12, label='line label')
 #line.text.set_text('line label')
-line.text.set_color('red')
-line.text.set_fontsize(16)
-
+#line.text.set_color('red')
+#line.text.set_fontsize(16)
 
 ax.add_line(line)
-
-
-#plt.show()
-"""
-f = TestFloor(floor_data)
-print f.verticies()
+plt.show()	

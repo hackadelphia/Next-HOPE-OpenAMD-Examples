@@ -24,6 +24,7 @@ class TestReader(unittest.TestCase):
 			json = LazyAMDReader.JSON_string_at_uri(uri)
 			self.assertNotEqual(json, None)
 
+#TODO: Add tests for filter_for_slice_uri
 
 if __name__ == '__main__':
 	unittest.main() #unittest.main
