@@ -9,7 +9,7 @@ import os.path
 
 
 def show_ping_graph():
-	reader = csv.reader(file("ping.csv"))
+	reader = csv.reader(file("../data/ping.csv"))
 	headers = reader.next()
 	
 	G = nx.Graph()
@@ -27,7 +27,7 @@ def show_ping_graph():
 	
 if __name__ == "__main__":
 
-	if not os.path.exists("ping.csv"):
+	if not os.path.exists("../data/ping.csv"):
 		print "please download the Last Hope data set unto the same directory as this file"
 		print "the last hope data set can be found at http://crawdad.org/meta.php?name=hope/amd "	
 	else :

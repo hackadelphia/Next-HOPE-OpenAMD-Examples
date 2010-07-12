@@ -15,7 +15,7 @@ def jaccard(a, b):
 	return float(len(c)) / (len(a) + len(b) - len(c))
 
 def show_talk_graph():
-	reader = csv.reader(file("talk_presence.csv"))
+	reader = csv.reader(file("../data/talk_presence.csv"))
 	headers = reader.next()
 
 	talks_seen = {}
@@ -49,7 +49,7 @@ def show_talk_graph():
 
 if __name__ == "__main__":
 
-	if not os.path.exists("talk_presence.csv"):
+	if not os.path.exists("../data/talk_presence.csv"):
 		print "please download the Last Hope data set unto the same directory as this file"
 		print "the last hope data set can be found at http://crawdad.org/meta.php?name=hope/amd "	
 	else :

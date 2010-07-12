@@ -8,7 +8,7 @@ import os.path
 ## minor updates by Far McKon
 
 def load_location_graph():
-	reader = csv.reader(file("position_snapshot.csv"))
+	reader = csv.reader(file("../data/position_snapshot.csv"))
 	headers = reader.next()
 
 	last_time = ""
@@ -51,7 +51,7 @@ def load_location_graph():
 
 if __name__ == "__main__":
 
-	if not os.path.exists("position_snapshot.csv"):
+	if not os.path.exists("../data/position_snapshot.csv"):
 		print "please download the Last Hope data set unto the same directory as this file"
 		print "the last hope data set can be found at http://crawdad.org/meta.php?name=hope/amd "	
 	else :
