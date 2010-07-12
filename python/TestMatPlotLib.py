@@ -8,7 +8,8 @@ import matplotlib.text as mtext
 
 #HACK: since floor data is NOT AVAILABLE, I'm creating floor data 
 #here as a static string.
-from  FakeFloorData import floor_data, FloorTest
+from  FakeFloorData import floor_data
+from Floor import TestFloor
 
 hacky_scale_factor = 20.0
 
@@ -64,7 +65,7 @@ class TestRoom(lines.Line2D):
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-floor = FloorTest(floor_data)
+floor = TestFloor(floor_data)
 floorBoundaries = floor.bounds()
 line = TestRoom(floor_data, mfc='red', ms=12, label='line label')
 #line.text.set_text('line label')
