@@ -47,6 +47,21 @@ module HopeAPI
   # args are the GET parameters. use the force.
   #
   def self.make_request(type, args={})
+    # Mocked out map request till it's implemented.
+    if (type == 'map')
+      return [{
+                :name => "FarLand",
+                :vertices => [[0, 0],[50, 0],[50,50],[20,60],[0,50]],
+                :floor => 1
+              },
+              {
+                :name => "cptn_corner",
+                :vertices => [[50, 0],[100, 0],[100,100],[50,100]],
+                :floor => 1
+              }
+             ]
+    end
+
     uri  = get_full_uri(type)
     # XXX totally broken for dupe keys, but meh. Ruby's HTTP clients blow.
     uri.query = args.keys.map { |key| CGI.escape("#{key}=#{args[key]}") }.join(';')

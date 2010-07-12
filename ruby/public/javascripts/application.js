@@ -1,31 +1,25 @@
 var MAX_WIDTH = 100; //meters TODO: find out how big biggest dimension of all rooms is.
 var METER;
+var cache = {};
 
-var fakeFloor = [{
-                   "name" : "FarLand",
-                   "vertices": [[0, 0],[50, 0],[50,50],[20,60],[0,50]],
-                   "floor": 1
-                 },
-                 {
-                   "name" : "cptn_corner",
-                   "vertices": [[50, 0],[100, 0],[100,100],[50,100]],
-                   "floor": 1
-                 }
-                ];
+var fakeFloor =
 
 $(document).ready(paint);
 $(window).bind('resize', repaint);
 
 function repaint() {
   $('#map').remove();
-  paint();
+  paint(true);
 }
 
-function paint() {
+function paint(useCache) {
+  if (useCache === undefined) {
+    useCache = false;
+  }
   calculateMeter();
   createCanvas();
-  drawRooms();
-  drawPeople('Egressia');
+  drawMap(useCache);
+  drawPeople('Egressia', useCache);
 }
 
 function calculateMeter() {
@@ -39,7 +33,8 @@ function createCanvas() {
 /**
  * color = hex, e.g. '#fff'
  */
-function fillCircle(x, y, radius, color, ctx) {
+function fillCircle(x, y, radius, color) {
+  var ctx = getContext();
   ctx.beginPath();
   ctx.fillStyle = color;
   ctx.arc(x, y, radius, 0, Math.PI*2, true);
@@ -56,44 +51,69 @@ function getContext() {
   }
 }
 
-function drawPeople(area) {
+function drawPeople(area, useCache) {
   var ctx = getContext();
-  $.ajax({
-           url: '/api/locations/',
-           data: {area: area},
-           success: function(data/*, textStatus, xhr*/){
-             for(var i = 0; i < data.length; i++) {
-               drawPerson(data[i], ctx);
+  if (useCache && cache && cache.people) {
+    peopleRenderer(cache.people);
+  } else {
+    $.ajax({
+             url: '/api/locations/',
+             data: {area: area},
+             success: function(data){
+               cache.people = data;
+               peopleRenderer(cache.people);
              }
-           }
-         });
-}
-
-function drawPerson(person, ctx) {
-  fillCircle(person.x*METER, person.y*METER, .5*METER, encodeToHex(person.user).substring(0, 7), ctx);
-}
-
-function drawRooms(){
-  var ctx = getContext();
-  var room;
-  var first;
-  // TODO: Change fakeFloor to make a call to the API for floor data.
-  for(var i = 0; i < fakeFloor.length; i++) {
-    room = fakeFloor[i];
-    if (room.floor === 1) {
-      ctx.beginPath();
-      first = room.vertices[0];
-      ctx.moveTo(first[0]*METER, first[1]*METER);
-      for (var k = 1; k < room.vertices.length; k++) {
-        ctx.lineTo(room.vertices[k][0]*METER, room.vertices[k][1]*METER);
-      }
-      ctx.lineTo(first[0]*METER, first[1]*METER);
-      ctx.closePath();
-      ctx.stroke();
-    }
+           });
   }
 }
 
+function peopleRenderer(data) {
+  for(var i = 0; i < data.length; i++) {
+    drawPerson(data[i]);
+  }
+}
+
+function drawPerson(person) {
+  fillCircle(person.x*METER, person.y*METER, .5*METER, encodeToHex(person.user).substring(0, 7));
+}
+
+function drawMap(useCache){
+  if (useCache && cache && cache.map){
+    mapRenderer(cache.map);
+  } else {
+    $.get('/api/map/', {}, function(data){
+            alert(data);
+            cache.map = data;
+            mapRenderer(cache.map);
+          });
+  }
+}
+
+function mapRenderer(map) {
+  for(var i = 0; i < map.length; i++) {
+    drawRoom(map[i]);
+  }
+}
+
+function drawRoom(room) {
+  var ctx = getContext();
+  var first;
+  if (room.floor === 1) {
+    ctx.beginPath();
+    first = room.vertices[0];
+    ctx.moveTo(first[0]*METER, first[1]*METER);
+    for (var k = 1; k < room.vertices.length; k++) {
+      ctx.lineTo(room.vertices[k][0]*METER, room.vertices[k][1]*METER);
+    }
+    ctx.lineTo(first[0]*METER, first[1]*METER);
+    ctx.closePath();
+    ctx.stroke();
+  }
+}
+
+/**
+ * Todo: come up with cool way to generate hexcolors from user ids.
+ */
 function encodeToHex(str){
     var r="";
     var e=str.length;
