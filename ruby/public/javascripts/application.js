@@ -82,7 +82,6 @@ function drawMap(useCache){
     mapRenderer(cache.map);
   } else {
     $.get('/api/map/', {}, function(data){
-            alert(data);
             cache.map = data;
             mapRenderer(cache.map);
           });
