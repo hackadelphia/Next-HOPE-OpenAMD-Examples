@@ -1,5 +1,5 @@
-var METER = 10;
-var API = "http://api.hope.net/api/";
+var MAX_WIDTH = 100; //meters TODO: find out how big biggest dimension of all rooms is.
+var METER;
 
 var fakeFloor = [{
                    "name" : "FarLand",
@@ -13,10 +13,28 @@ var fakeFloor = [{
                  }
                 ];
 
-$(document).ready(function() {
-                    drawRooms();
-                    drawPeople();
-                  });
+$(document).ready(paint);
+$(window).bind('resize', repaint);
+
+function repaint() {
+  $('#map').remove();
+  paint();
+}
+
+function paint() {
+  calculateMeter();
+  createCanvas();
+  drawRooms();
+  drawPeople('Egressia');
+}
+
+function calculateMeter() {
+  METER = (window.innerWidth > window.innerHeight) ? (window.innerHeight-20)/MAX_WIDTH : (window.innerWidth-20)/MAX_WIDTH;
+}
+
+function createCanvas() {
+  $('<canvas id="map" width="'+(window.innerWidth-20)+'" height="'+(window.innerHeight-20)+'"></canvas>').appendTo('#container');
+}
 
 /**
  * color = hex, e.g. '#fff'
@@ -38,11 +56,11 @@ function getContext() {
   }
 }
 
-function drawPeople() {
+function drawPeople(area) {
   var ctx = getContext();
   $.ajax({
            url: '/api/locations/',
-           data: {user: 'user1'},
+           data: {area: area},
            success: function(data/*, textStatus, xhr*/){
              for(var i = 0; i < data.length; i++) {
                drawPerson(data[i], ctx);
@@ -52,29 +70,39 @@ function drawPeople() {
 }
 
 function drawPerson(person, ctx) {
-  fillCircle(person.x*METER, person.y*METER, .5*METER, '#f00', ctx);
+  fillCircle(person.x*METER, person.y*METER, .5*METER, encodeToHex(person.user).substring(0, 7), ctx);
 }
 
 function drawRooms(){
-  var multiplier = 10;
-  var canvas = document.getElementById('map');
-  if (canvas.getContext){
-    var ctx = canvas.getContext('2d');
-    var room;
-    var first;
-    for(var i = 0; i < fakeFloor.length; i++) {
-      room = fakeFloor[i];
-      if (room.floor === 1) {
-        ctx.beginPath();
-        first = room.vertices[0];
-        ctx.moveTo(first[0], first[1]);
-        for (var k = 1; k < room.vertices.length; k++) {
-          ctx.lineTo(room.vertices[k][0], room.vertices[k][1]);
-        }
-        ctx.lineTo(first[0], first[1]);
-        ctx.closePath();
-        ctx.stroke();
+  var ctx = getContext();
+  var room;
+  var first;
+  // TODO: Change fakeFloor to make a call to the API for floor data.
+  for(var i = 0; i < fakeFloor.length; i++) {
+    room = fakeFloor[i];
+    if (room.floor === 1) {
+      ctx.beginPath();
+      first = room.vertices[0];
+      ctx.moveTo(first[0]*METER, first[1]*METER);
+      for (var k = 1; k < room.vertices.length; k++) {
+        ctx.lineTo(room.vertices[k][0]*METER, room.vertices[k][1]*METER);
       }
+      ctx.lineTo(first[0]*METER, first[1]*METER);
+      ctx.closePath();
+      ctx.stroke();
     }
   }
+}
+
+function encodeToHex(str){
+    var r="";
+    var e=str.length;
+    var c=0;
+    var h;
+    while(c<e){
+        h=str.charCodeAt(c++).toString(16);
+        while(h.length<3) h="0"+h;
+        r+=h;
+    }
+    return r;
 }
