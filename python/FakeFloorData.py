@@ -56,6 +56,10 @@ floor_data =  [
  	
 ]
 
+## To speed up inital xlatin, these are pixel x,y points of the
+# areas on the mezziene floor. We need to finish the list, then conver 
+#them to meters
+
 #"NOC" at 84,414 size 188,52
 #"Core Staff Area" at 88,462 size 180,132
 #"NOC NOC" at 273, 513 size 15,24
