@@ -5,13 +5,14 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as lines
 import matplotlib.transforms as mtransforms
 import matplotlib.text as mtext
-
+import logging
 #HACK: since floor data is NOT AVAILABLE, I'm creating floor data 
 #here as a static string.
 from  FakeFloorData import floor_data
 from Floor import TestFloor
 
-hacky_scale_factor = 20.0
+
+logging.basicConfig(level=logging.INFO)
 
 
 class TestRoom(lines.Line2D):
@@ -31,8 +32,8 @@ class TestRoom(lines.Line2D):
 		x,y = [],[]
 		if 'vertices' in dict:
 			for v in dict['vertices']:
-				x.append(v[0]/hacky_scale_factor) 
-				y.append(v[1]/hacky_scale_factor)
+				x.append(v[0]) 
+				y.append(v[1])
 		else:
 			pass
 		return x,y
@@ -55,7 +56,6 @@ class TestRoom(lines.Line2D):
    def set_data(self, x, y):
       if len(x):
          self.text.set_position((x[-1], y[-1]))
-
       lines.Line2D.set_data(self, x, y)
 
    def draw(self, renderer):
@@ -63,14 +63,21 @@ class TestRoom(lines.Line2D):
       lines.Line2D.draw(self, renderer)
       self.text.draw(renderer)
 
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 floor = TestFloor(floor_data)
 floorBoundaries = floor.bounds()
-line = TestRoom(floor_data, mfc='red', ms=12, label='line label')
-#line.text.set_text('line label')
+
+#line = TestRoom(floor_data, mfc='red', ms=12, label='line label')
+#print floorBoundaries
+##plt.axis(floorBoundaries[0][0], floorBoundaries[2][0],
+##		 floorBoundaries[0][1], floorBoundaries[2][1])
+#plt.axis([0, 63, 0, 63]) 
+
+#line.text.set_text('Floor Outline')
 #line.text.set_color('red')
 #line.text.set_fontsize(16)
 
-ax.add_line(line)
+#ax.add_line(line)
 plt.show()	
