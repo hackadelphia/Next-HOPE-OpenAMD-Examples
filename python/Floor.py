@@ -32,9 +32,8 @@ class TestFloor():
 			if entry['floor'] not in self.floorDict.keys():
 				logging.info("adding a floor")
 				self.floorDict[entry['floor']] = []
-			else:
-				logging.info("making rooms")
-				self.floorDict[entry['floor']].append(TestRoom(entry))
+			logging.info("making rooms")
+			self.floorDict[entry['floor']].append(TestRoom(entry))
 
 	def area_by_verticies(self, vertices):
 		if len(vertices) == 0:
