@@ -89,7 +89,7 @@ class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
 		return 0
 
 	def data_list_from_loc(self, locData):
-		z = '1'
+		z = '0'
 		flag = '0'
 		scaledX = self.amd_data_scale_to_lica(locData['x'])
 		scaledY = self.amd_data_scale_to_lica(locData['y']) 		
