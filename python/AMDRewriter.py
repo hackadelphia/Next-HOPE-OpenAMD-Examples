@@ -59,32 +59,55 @@ def lazy_and_bad_way_to_get_dict():
 
 class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
 	
+	lastScaledMaxX = 80.0
+	lastScaledMaxY = 80.0
+	
 	def do_GET(self):
 		try:
 			self.send_response(200)
 			self.send_header('Content-type','text/plain')
 			self.end_headers()
-#			self.wfile.write("testText")
-#			print self.amd_data_for_leica()
-			self.wfile.write(self.amd_data_for_leica())
+			x = self.amd_data_for_leica()
+			print x
+			self.wfile.write(x)
 			return
 		except IOError:
 			self.send_error(404,'Someone Screwed Up')
 		return
-	
-	@classmethod
-	def amd_data_for_leica(cls):
+
+	def amd_data_scale_to_lica(self, rawLoc, cardinal = 'x'):
+		if(cardinal == 'x'):
+			print self.lastScaledMaxX
+			tmp = float(rawLoc) - (self.lastScaledMaxX/2)
+			tmp = tmp/(self.lastScaledMaxX/2)
+			return tmp
+		if(cardinal == 'y'):
+			print self.lastScaledMaxY
+			tmp = float(rawLoc) - (self.lastScaledMaxY/2)
+			tmp = tmp/(self.lastScaledMaxY/2)
+			return tmp
+		return 0
+
+	def data_list_from_loc(self, locData):
+		z = '1'
+		flag = '0'
+		scaledX = self.amd_data_scale_to_lica(locData['x'])
+		scaledY = self.amd_data_scale_to_lica(locData['y']) 		
+		return map(str, ['',locData['user'],scaledX,scaledY,z,flag])
+		
+	def amd_data_for_leica(self):
 		""" """
-		retString = ''
-		locationDict = lazy_and_bad_way_to_get_dict()
+		retString = []
+		locationDict = [{'user':'user2','x':'-20', 'y':'40'},{'user':'user1','x':'50', 'y':'60'} ]#lazy_and_bad_way_to_get_dict()
 		# -- for each object in the list, grab it as  a dict, and look for 
 		# -- having a track name, and that name being 'tesla'
+		print locationDict
 		for loc in locationDict:
 			if u'x' in loc.keys():
-				retString += (  loc['user'] + '|'+  loc['x'] + '|'+loc['y'] +'| 0 | 1\n')
-			else: 
-				print '\n	'
-		return retString
+				userData = self.data_list_from_loc(loc)
+				retString.append('|'.join(userData))
+
+		return '\n'.join(retString)
 		
 def main():
 	try:
