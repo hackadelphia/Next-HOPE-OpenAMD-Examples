@@ -2,7 +2,7 @@ import json
 import re
 import urllib2
 
-from BaseHTTPService import BaseHTTPRequestHandler. HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 """ This file is a quick example of how to use the OpenAMD API, and what you can do with it.
 This is by no means a complete implementation, but it is a good place to start, test
 and tinker as you get ready to build your awesomely awesome app or project of your own. 
@@ -62,16 +62,18 @@ class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		try:
 			self.send_response(200)
-			self.send_header('Content-type','text/html')
+			self.send_header('Content-type','text/plain')
 			self.end_headers()
-			self.wfile.write("do a thing")
-			self.wfile.write(amd_data_for_leica())
+#			self.wfile.write("testText")
+#			print self.amd_data_for_leica()
+			self.wfile.write(self.amd_data_for_leica())
 			return
 		except IOError:
 			self.send_error(404,'Someone Screwed Up')
 		return
-		
-	def amd_data_for_leica():
+	
+	@classmethod
+	def amd_data_for_leica(cls):
 		""" """
 		retString = ''
 		locationDict = lazy_and_bad_way_to_get_dict()
@@ -79,18 +81,18 @@ class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
 		# -- having a track name, and that name being 'tesla'
 		for loc in locationDict:
 			if u'x' in loc.keys():
-				retString.append(  loc['user'] + '|'+  loc['x'] + '|'+loc['y'] +'| 0 | 1\n')
+				retString += (  loc['user'] + '|'+  loc['x'] + '|'+loc['y'] +'| 0 | 1\n')
 			else: 
 				print '\n	'
-		reurn retString
+		return retString
 		
 def main():
 	try:
-		server = HTTPServer(('','8081'),HopeAmdRewriterHandler)
+		server = HTTPServer(('',8081),HopeAmdRewriterHandler)
 		print 'server started'
 		server.serve_forever()
 	except KeyboardInterrupt:
-		print "^C received, killing server'
+		print "^C received, killing server"
 		server.socket.close()
 
 
