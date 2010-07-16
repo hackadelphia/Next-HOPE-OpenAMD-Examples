@@ -98,7 +98,8 @@ class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
 	def amd_data_for_leica(self):
 		""" """
 		retString = []
-		locationDict = [{'user':'user2','x':'-20', 'y':'40'},{'user':'user1','x':'50', 'y':'60'} ]#lazy_and_bad_way_to_get_dict()
+		# [{'user':'user2','x':'-20', 'y':'40'},{'user':'user1','x':'50', 'y':'60'} ]#
+		locationDict = lazy_and_bad_way_to_get_dict()
 		# -- for each object in the list, grab it as  a dict, and look for 
 		# -- having a track name, and that name being 'tesla'
 		print locationDict
