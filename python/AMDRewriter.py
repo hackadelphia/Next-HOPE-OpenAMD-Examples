@@ -1,6 +1,8 @@
 import json
 import re
 import urllib2
+
+from BaseHTTPService import BaseHTTPRequestHandler. HTTPServer
 """ This file is a quick example of how to use the OpenAMD API, and what you can do with it.
 This is by no means a complete implementation, but it is a good place to start, test
 and tinker as you get ready to build your awesomely awesome app or project of your own. 
@@ -55,17 +57,47 @@ def lazy_and_bad_way_to_get_dict():
 
 	return objs
 
+class HopeAmdRewriterHandler(BaseHTTPRequestHandler):
+	
+	def do_GET(self):
+		try:
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write("do a thing")
+			self.wfile.write(amd_data_for_leica())
+			return
+		except IOError:
+			self.send_error(404,'Someone Screwed Up')
+		return
+		
+	def amd_data_for_leica():
+		""" """
+		retString = ''
+		locationDict = lazy_and_bad_way_to_get_dict()
+		# -- for each object in the list, grab it as  a dict, and look for 
+		# -- having a track name, and that name being 'tesla'
+		for loc in locationDict:
+			if u'x' in loc.keys():
+				retString.append(  loc['user'] + '|'+  loc['x'] + '|'+loc['y'] +'| 0 | 1\n')
+			else: 
+				print '\n	'
+		reurn retString
+		
+def main():
+	try:
+		server = HTTPServer(('','8081'),HopeAmdRewriterHandler)
+		print 'server started'
+		server.serve_forever()
+	except KeyboardInterrupt:
+		print "^C received, killing server'
+		server.socket.close()
+
 
 #> This is a pretty standard main statement for Python, and if you run 
 #> "python $THIS_FILE_NAME this will run. This just grabs/shows the locations data
 if __name__ == '__main__':
-	
-	locationDict = lazy_and_bad_way_to_get_dict()
-	# -- for each object in the list, grab it as  a dict, and look for 
-	# -- having a track name, and that name being 'tesla'
-	for loc in locationDict:
-		if u'x' in loc.keys():
-			print  loc['user'] + '|'+  loc['x'] + '|'+loc['y'] +'| 0 | 1'
-		else: print '\n	'
+
+	main()	
 
 	
